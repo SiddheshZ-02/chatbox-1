@@ -1,5 +1,15 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { getAuth, onAuthStateChanged, FirebaseAuthTypes } from '@react-native-firebase/auth';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
+import {
+  getAuth,
+  onAuthStateChanged,
+  FirebaseAuthTypes,
+} from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
 
@@ -33,10 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await firestore()
         .collection('users')
         .doc(userId)
-        .set(
-          { fcmToken: token },
-          { merge: true }
-        );
+        .set({ fcmToken: token }, { merge: true });
       console.log('FCM token saved to user profile');
     } catch (error) {
       console.error('Error saving FCM token:', error);
@@ -46,12 +53,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Main auth effect
   useEffect(() => {
     let isMounted = true;
-    
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+
+    const unsubscribe = onAuthStateChanged(auth, async firebaseUser => {
       if (!isMounted) return;
-      
+
       setUser(firebaseUser);
-      
+
       if (firebaseUser) {
         // Initialize notifications for authenticated user
         try {
@@ -60,33 +67,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           const enabled =
             authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
             authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-          
+
           if (enabled) {
             // Get FCM token
             const fcmToken = await messaging().getToken();
-            
+
             if (fcmToken && isMounted) {
               // Save token to user profile
-              await saveTokenToUserProfile(firebaseUser.uid, fcmToken);
+              saveTokenToUserProfile(firebaseUser.uid, fcmToken);
             }
           }
         } catch (error) {
           console.error('Error initializing notifications:', error);
         }
-        
+
         try {
           // Fetch user profile from Firestore
-          const userDoc = await firestore().collection('users').doc(firebaseUser.uid).get();
-          
+          const userDoc = await firestore()
+            .collection('users')
+            .doc(firebaseUser.uid)
+            .get();
+
           if (!isMounted) return;
-          
+
           if (userDoc.exists()) {
             const userData = userDoc.data();
             setUserProfile({
               uid: firebaseUser.uid,
               name: userData?.name || firebaseUser.displayName || 'User',
               email: userData?.email || firebaseUser.email || '',
-              profile_image: userData?.profile_image || firebaseUser.photoURL || '',
+              profile_image:
+                userData?.profile_image || firebaseUser.photoURL || '',
               online: true,
               fcmToken: userData?.fcmToken,
             });
@@ -118,7 +129,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setUserProfile(null);
         }
       }
-      
+
       if (isMounted) {
         setLoading(false);
       }
