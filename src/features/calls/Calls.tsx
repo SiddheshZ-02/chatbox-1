@@ -5,7 +5,6 @@ import {
   StyleSheet,
   FlatList,
   SectionList,
-  Image,
   TouchableOpacity,
   Alert,
   KeyboardAvoidingView,
@@ -231,26 +230,28 @@ export default function Calls() {
     [user, navigation],
   );
 
-
-const confirmDelete = useCallback(async (callId: string) => {
-  Alert.alert('Delete record', 'Remove this call from your history?', [
-    { text: 'Cancel', style: 'cancel' },
-    {
-      text: 'Delete',
-      style: 'destructive',
-      onPress: async () => {
-        try {
-          await callHistoryService.deleteCallRecord(callId);
-          // The real-time listener will automatically update the UI
-          console.log('Call record deletion initiated for ID:', callId);
-        } catch (error) {
-          console.error('Failed to delete call record:', error);
-          Alert.alert('Error', 'Failed to delete call record. Please try again.');
-        }
+  const confirmDelete = useCallback(async (callId: string) => {
+    Alert.alert('Delete record', 'Remove this call from your history?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await callHistoryService.deleteCallRecord(callId);
+            // The real-time listener will automatically update the UI
+            console.log('Call record deletion initiated for ID:', callId);
+          } catch (error) {
+            console.error('Failed to delete call record:', error);
+            Alert.alert(
+              'Error',
+              'Failed to delete call record. Please try again.',
+            );
+          }
+        },
       },
-    },
-  ]);
-}, []);
+    ]);
+  }, []);
 
   // ── Row renderer (memoised per uid to avoid re-renders) ───────────────────
 
@@ -258,7 +259,7 @@ const confirmDelete = useCallback(async (callId: string) => {
     ({ item }: { item: CallHistoryItem }) => {
       const isCaller = item.callerId === user?.uid;
       const name = isCaller ? item.calleeName : item.callerName;
-      const avatar = isCaller ? item.calleeAvatar : item.callerAvatar;
+
       const display = getStatusDisplay(item, user?.uid);
       const missed = isMissed(item.callStatus);
 
@@ -271,13 +272,12 @@ const confirmDelete = useCallback(async (callId: string) => {
         >
           {/* Avatar + call-type pip */}
           <View style={styles.avatarWrap}>
-            
-              <View style={styles.avatarFallback}>
-                <Text style={styles.avatarInitial}>
-                  {(name ?? '?')[0].toUpperCase()}
-                </Text>
-              </View>
-           
+            <View style={styles.avatarFallback}>
+              <Text style={styles.avatarInitial}>
+                {(name ?? '?')[0].toUpperCase()}
+              </Text>
+            </View>
+
             <View style={[styles.typePip, missed && styles.typePipMissed]}>
               <Feather
                 name={item.callType === 'video' ? 'video' : 'phone'}
@@ -296,7 +296,7 @@ const confirmDelete = useCallback(async (callId: string) => {
               {name}
             </Text>
             <View style={styles.subRow}>
-               {/* <View style={[styles.typePip, missed && styles.typePipMissed]}>
+              {/* <View style={[styles.typePip, missed && styles.typePipMissed]}>
               <Feather
                 name={item.callType === 'video' ? 'video' : 'phone'}
                 size={9}
@@ -403,7 +403,6 @@ const confirmDelete = useCallback(async (callId: string) => {
                 ListHeaderComponent={
                   <View style={styles.sheetHeader}>
                     <Text style={styles.sheetTitle}>All Calls</Text>
-                  
                   </View>
                 }
               />
@@ -497,7 +496,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   sheetTitle: { fontSize: 15, fontWeight: '700', color: '#111' },
-  sheetHint: { fontSize: 12, color: '#AEAEB2' },
+
   seeAll: { fontSize: 13, color: '#128C7E', fontWeight: '600' },
 
   // Section header
@@ -531,7 +530,7 @@ const styles = StyleSheet.create({
 
   // Avatar + pip
   avatarWrap: { width: 52, height: 52, marginRight: 14, position: 'relative' },
-  avatar: { width: 52, height: 52, borderRadius: 26 },
+
   avatarFallback: {
     width: 52,
     height: 52,

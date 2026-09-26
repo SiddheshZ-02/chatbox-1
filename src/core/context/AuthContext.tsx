@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             if (fcmToken && isMounted) {
               // Save token to user profile
-              saveTokenToUserProfile(firebaseUser.uid, fcmToken);
+              await saveTokenToUserProfile(firebaseUser.uid, fcmToken);
             }
           }
         } catch (error) {
