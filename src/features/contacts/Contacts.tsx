@@ -317,9 +317,6 @@ export default function Contacts() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          you
-          found
-          me
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Feather name="users" size={48} color="#8E8E93" />
