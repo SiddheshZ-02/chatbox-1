@@ -154,7 +154,7 @@ class AuthService {
       case "auth/wrong-password":
         return "Incorrect password.";
       default:
-        return error.message | "An error occurred. Please try again.";
+        return error.message || "An error occurred. Please try again.";
     }
   }
 }
