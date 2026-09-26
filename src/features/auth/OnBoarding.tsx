@@ -1,5 +1,4 @@
 import {
-  Dimensions,
   Image,
   StatusBar,
   StyleSheet,
@@ -7,12 +6,12 @@ import {
   TouchableOpacity,
   View,
   useWindowDimensions,
-} from 'react-native';
-import React from 'react';
-import { Images } from '../../shared/assets/images';
-import AppButton from '../../shared/components/AppButton';
-import { useNavigation } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+} from "react-native";
+import React from "react";
+import { Images } from "../../shared/assets/images";
+import AppButton from "../../shared/components/AppButton";
+import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const OnBoarding = () => {
   const navigation = useNavigation();
@@ -20,22 +19,26 @@ const OnBoarding = () => {
 
   const handleSignUp = () => {
     // @ts-ignore - navigating to Auth navigator
-    navigation.navigate('Auth');
+    navigation.navigate("Auth");
   };
 
   const handleLogin = () => {
     // @ts-ignore - navigating to nested navigator
-    navigation.navigate('Auth', { screen: 'Signin' });
+    navigation.navigate("Auth", { screen: "Signin" });
   };
 
   // Responsive calculations
   const isSmallDevice = height < 800;
   const isLargeDevice = height > 650;
-  
-  const logoSize = isSmallDevice ? width * 0.25 : isLargeDevice ? width * 0.35 : width * 0.3;
+
+  const logoSize = isSmallDevice
+    ? width * 0.25
+    : isLargeDevice
+    ? width * 0.35
+    : width * 0.3;
   const titleSize = isSmallDevice ? 48 : isLargeDevice ? 60 : 58;
   const subtitleSize = isSmallDevice ? 18 : 16;
-  const buttonMarginTop = isSmallDevice ? 20 : 40;
+
   const socialGap = isSmallDevice ? 20 : 30;
 
   return (
@@ -43,18 +46,18 @@ const OnBoarding = () => {
       <StatusBar barStyle="light-content" />
 
       {/* Background Image */}
-      <Image 
-        source={Images.LinearImg} 
-        style={[styles.bgImage, { height: height }]} 
+      <Image
+        source={Images.LinearImg}
+        style={[styles.bgImage, { height: height }]}
       />
 
       {/* Overlay */}
       <View style={styles.overlay}>
         {/* Logo */}
         <View style={styles.logoContainer}>
-          <Image 
-            source={Images.LogoTop} 
-            style={[styles.logo, { width: logoSize, height: logoSize }]} 
+          <Image
+            source={Images.LogoTop}
+            style={[styles.logo, { width: logoSize, height: logoSize }]}
           />
         </View>
 
@@ -66,7 +69,7 @@ const OnBoarding = () => {
           </Text>
 
           <Text style={[styles.subtitle, { fontSize: subtitleSize }]}>
-            Our chat app is the perfect way to stay connected with friends and
+            , Our chat app is the perfect way to stay connected with friends and
             family.
           </Text>
 
@@ -100,14 +103,14 @@ const OnBoarding = () => {
               textStyle={undefined}
             />
 
-          {/* Login */}
-          <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
-            <Text style={styles.loginText}>Existing account? Log in</Text>
-          </TouchableOpacity>
+            {/* Login */}
+            <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
+              <Text style={styles.loginText}>Existing account? Log in</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 };
 
@@ -116,13 +119,13 @@ export default OnBoarding;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: "#000",
   },
 
   bgImage: {
-    width: '100%',
-    position: 'absolute',
-    resizeMode: 'cover',
+    width: "100%",
+    position: "absolute",
+    resizeMode: "cover",
   },
 
   overlay: {
@@ -131,40 +134,40 @@ const styles = StyleSheet.create({
   },
 
   logoContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 20,
   },
 
   logo: {
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
 
   content: {
     flex: 1,
     paddingHorizontal: 20,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     paddingBottom: 40,
   },
 
   title: {
-    color: '#fff',
-    fontWeight: '400',
+    color: "#fff",
+    fontWeight: "400",
     lineHeight: 65,
   },
 
   titleBold: {
-    fontWeight: '600',
+    fontWeight: "600",
   },
 
   subtitle: {
-    color: '#B9C1BE',
+    color: "#B9C1BE",
     lineHeight: 24,
     marginTop: 20,
   },
 
   socialRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 40,
   },
 
@@ -173,31 +176,31 @@ const styles = StyleSheet.create({
     width: 50,
     borderRadius: 30,
     borderWidth: 1,
-    borderColor: '#FFF',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: "#FFF",
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   socialImage: {
     width: 24,
     height: 24,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
 
   dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 40,
   },
 
   divider: {
     flex: 1,
     height: 1,
-    backgroundColor: '#CDD1D0',
+    backgroundColor: "#CDD1D0",
   },
 
   orText: {
-    color: '#D6E4E0',
+    color: "#D6E4E0",
     marginHorizontal: 12,
     fontSize: 14,
   },
@@ -207,12 +210,12 @@ const styles = StyleSheet.create({
   },
 
   loginBtn: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 30,
   },
 
   loginText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
   },
 });
