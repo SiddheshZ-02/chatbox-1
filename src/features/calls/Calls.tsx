@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   View,
   Text,
@@ -9,19 +9,19 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-} from 'react-native';
-import Feather from 'react-native-vector-icons/Feather';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '../../core/context/AuthContext';
-import { callHistoryService } from '../../core/services/callHistory.service';
-import { CallHistoryItem } from '../chat/UserMessage';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AppStackParamList } from '../../core/navigation/AppNavigator';
+} from "react-native";
+import Feather from "react-native-vector-icons/Feather";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../../core/context/AuthContext";
+import { callHistoryService } from "../../core/services/callHistory.service";
+import { CallHistoryItem } from "../chat/UserMessage";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { AppStackParamList } from "../../core/navigation/AppNavigator";
 
 type CallsNavigationProp = NativeStackNavigationProp<
   AppStackParamList,
-  'userMsg'
+  "userMsg"
 >;
 
 // ─── Status display helpers ───────────────────────────────────────────────────
@@ -39,9 +39,9 @@ type CallsNavigationProp = NativeStackNavigationProp<
 //
 // ─────────────────────────────────────────────────────────────────────────────
 
-const GREEN = '#25D366';
-const RED = '#FF3B30';
-const GREY = '#8E8E93';
+const GREEN = "#25D366";
+const RED = "#FF3B30";
+const GREY = "#8E8E93";
 
 type StatusDisplay = { icon: string; color: string; label: string };
 
@@ -49,57 +49,57 @@ function getStatusDisplay(
   item: CallHistoryItem,
   currentUserId: string | undefined,
 ): StatusDisplay {
-  const t = item.callType === 'video' ? 'video' : 'voice';
+  const t = item.callType === "video" ? "video" : "voice";
   const isCaller = item.callerId === currentUserId;
 
   switch (item.callStatus) {
-    case 'outgoing':
+    case "outgoing":
       return {
-        icon: 'arrow-up-right',
+        icon: "arrow-up-right",
         color: GREEN,
         label: `Outgoing ${t} call`,
       };
 
-    case 'received':
+    case "received":
       return {
-        icon: 'arrow-down-left',
+        icon: "arrow-down-left",
         color: GREEN,
         label: `Incoming ${t} call`,
       };
 
-    case 'missed':
+    case "missed":
       // isCaller=true  → they placed the call, other side never answered
       // isCaller=false → they received the call, caller hung up before they saw it
       return isCaller
-        ? { icon: 'phone-missed', color: RED, label: `Missed ${t} call` }
-        : { icon: 'phone-missed', color: RED, label: `Missed ${t} call` };
+        ? { icon: "phone-missed", color: RED, label: `Missed ${t} call` }
+        : { icon: "phone-missed", color: RED, label: `Missed ${t} call` };
 
-    case 'rejected':
+    case "rejected":
       // Callee deliberately tapped Decline. From their own history it still
       // reads "Missed call" — same as WhatsApp.
-      return { icon: 'phone-missed', color: RED, label: `Missed ${t} call` };
+      return { icon: "phone-missed", color: RED, label: `Missed ${t} call` };
 
     // Legacy fallback for pre-migration 'completed' records
-    case 'completed':
+    case "completed":
       return isCaller
-        ? { icon: 'arrow-up-right', color: GREEN, label: `Outgoing ${t} call` }
+        ? { icon: "arrow-up-right", color: GREEN, label: `Outgoing ${t} call` }
         : {
-            icon: 'arrow-down-left',
+            icon: "arrow-down-left",
             color: GREEN,
             label: `Incoming ${t} call`,
           };
 
     default:
       return {
-        icon: item.callType === 'video' ? 'video' : 'phone',
+        icon: item.callType === "video" ? "video" : "phone",
         color: GREY,
         label: `${t} call`,
       };
   }
 }
 
-const isMissed = (s: CallHistoryItem['callStatus']) =>
-  s === 'missed' || s === 'rejected';
+const isMissed = (s: CallHistoryItem["callStatus"]) =>
+  s === "missed" || s === "rejected";
 
 // ─── Timestamp helpers ────────────────────────────────────────────────────────
 
@@ -113,16 +113,16 @@ function toDate(ts: any): Date | null {
 
 function fmtTime(ts: any): string {
   const d = toDate(ts);
-  if (!d) return '';
+  if (!d) return "";
   return d.toLocaleTimeString([], {
-    hour: '2-digit',
-    minute: '2-digit',
+    hour: "2-digit",
+    minute: "2-digit",
     hour12: true,
   });
 }
 
 function fmtDuration(secs: number): string {
-  return `${Math.floor(secs / 60)}:${(secs % 60).toString().padStart(2, '0')}`;
+  return `${Math.floor(secs / 60)}:${(secs % 60).toString().padStart(2, "0")}`;
 }
 
 /**
@@ -135,17 +135,17 @@ function fmtDuration(secs: number): string {
  */
 function sectionKey(ts: any): string {
   const d = toDate(ts);
-  if (!d) return 'Unknown';
+  if (!d) return "Unknown";
   const today = new Date();
   const days = Math.floor((today.getTime() - d.getTime()) / 86_400_000);
 
-  if (days === 0) return 'Today';
-  if (days === 1) return 'Yesterday';
-  if (days < 7) return d.toLocaleDateString([], { weekday: 'long' });
+  if (days === 0) return "Today";
+  if (days === 1) return "Yesterday";
+  if (days < 7) return d.toLocaleDateString([], { weekday: "long" });
   return d.toLocaleDateString([], {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
+    day: "numeric",
+    month: "short",
+    year: "numeric",
   });
 }
 
@@ -163,13 +163,13 @@ function sortKeys(keys: string[]): string[] {
     // Weekday names are 2–8; we keep them as-is and resolve below
   };
   const WEEKDAYS = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
   ];
 
   return [...keys].sort((a, b) => {
@@ -219,7 +219,7 @@ export default function Calls() {
   const openChat = useCallback(
     (item: CallHistoryItem) => {
       const isCaller = item.callerId === user?.uid;
-      navigation.navigate('userMsg', {
+      navigation.navigate("userMsg", {
         userData: {
           uid: isCaller ? item.calleeId : item.callerId,
           name: isCaller ? item.calleeName : item.callerName,
@@ -231,21 +231,21 @@ export default function Calls() {
   );
 
   const confirmDelete = useCallback(async (callId: string) => {
-    Alert.alert('Delete record', 'Remove this call from your history?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert("Delete record", "Remove this call from your history?", [
+      { text: "Cancel", style: "cancel" },
       {
-        text: 'Delete',
-        style: 'destructive',
+        text: "Delete",
+        style: "destructive",
         onPress: async () => {
           try {
             await callHistoryService.deleteCallRecord(callId);
             // The real-time listener will automatically update the UI
-            console.log('Call record deletion initiated for ID:', callId);
+            console.log("Call record deletion initiated for ID:", callId);
           } catch (error) {
-            console.error('Failed to delete call record:', error);
+            console.error("Failed to delete call record:", error);
             Alert.alert(
-              'Error',
-              'Failed to delete call record. Please try again.',
+              "Error",
+              "Failed to delete call record. Please try again.",
             );
           }
         },
@@ -258,6 +258,7 @@ export default function Calls() {
   const renderRow = useCallback(
     ({ item }: { item: CallHistoryItem }) => {
       const isCaller = item.callerId === user?.uid;
+
       const name = isCaller ? item.calleeName : item.callerName;
 
       const display = getStatusDisplay(item, user?.uid);
@@ -274,13 +275,13 @@ export default function Calls() {
           <View style={styles.avatarWrap}>
             <View style={styles.avatarFallback}>
               <Text style={styles.avatarInitial}>
-                {(name ?? '?')[0].toUpperCase()}
+                {(name ?? "?")[0].toUpperCase()}
               </Text>
             </View>
 
             <View style={[styles.typePip, missed && styles.typePipMissed]}>
               <Feather
-                name={item.callType === 'video' ? 'video' : 'phone'}
+                name={item.callType === "video" ? "video" : "phone"}
                 size={9}
                 color="#fff"
               />
@@ -307,9 +308,9 @@ export default function Calls() {
                 style={[styles.subText, missed && styles.subTextMissed]}
                 numberOfLines={1}
               >
-                {'  '}
+                {"  "}
                 {display.label}
-                {item.duration ? `  ·  ${fmtDuration(item.duration)}` : ''}
+                {item.duration ? `  ·  ${fmtDuration(item.duration)}` : ""}
               </Text>
             </View>
           </View>
@@ -336,11 +337,11 @@ export default function Calls() {
 
   const sections = useMemo(() => {
     const grouped: Record<string, CallHistoryItem[]> = {};
-    calls.forEach(c => {
+    calls.forEach((c) => {
       const key = sectionKey(c.timestamp);
       (grouped[key] = grouped[key] ?? []).push(c);
     });
-    return sortKeys(Object.keys(grouped)).map(title => ({
+    return sortKeys(Object.keys(grouped)).map((title) => ({
       title,
       data: grouped[title],
     }));
@@ -354,7 +355,7 @@ export default function Calls() {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         {/* ── App bar ──────────────────────────────────────────────────── */}
         <View style={styles.appBar}>
@@ -367,11 +368,11 @@ export default function Calls() {
           <TouchableOpacity
             style={styles.iconBtn}
             activeOpacity={0.7}
-            onPress={() => setShowHistory(v => !v)}
+            onPress={() => setShowHistory((v) => !v)}
           >
             {/* Clock = view full history; List = back to recent */}
             <Feather
-              name={showHistory ? 'list' : 'clock'}
+              name={showHistory ? "list" : "clock"}
               size={19}
               color="#fff"
             />
@@ -387,7 +388,7 @@ export default function Calls() {
             ) : (
               <SectionList
                 sections={sections}
-                keyExtractor={item => item.id}
+                keyExtractor={(item) => item.id}
                 renderItem={renderRow}
                 renderSectionHeader={({ section }) => (
                   <View style={styles.sectionHeader}>
@@ -411,7 +412,7 @@ export default function Calls() {
             /* Recent calls — latest 10 */
             <FlatList
               data={recentCalls}
-              keyExtractor={item => item.id}
+              keyExtractor={(item) => item.id}
               renderItem={renderRow}
               ItemSeparatorComponent={() => <View style={styles.sep} />}
               showsVerticalScrollIndicator={false}
@@ -452,21 +453,21 @@ function EmptyState() {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
+  container: { flex: 1, backgroundColor: "#000" },
 
   // App bar
   appBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 20,
     height: 100,
-    backgroundColor: '#000',
+    backgroundColor: "#000",
   },
   appBarTitle: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     letterSpacing: 0.1,
   },
   iconBtn: {
@@ -474,121 +475,120 @@ const styles = StyleSheet.create({
     height: 38,
     borderRadius: 19,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.25)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: "rgba(255,255,255,0.25)",
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   // White sheet
   sheet: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   sheetHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 18,
     paddingTop: 20,
     paddingBottom: 10,
   },
-  sheetTitle: { fontSize: 15, fontWeight: '700', color: '#111' },
+  sheetTitle: { fontSize: 15, fontWeight: "700", color: "#111" },
 
-  seeAll: { fontSize: 13, color: '#128C7E', fontWeight: '600' },
+  seeAll: { fontSize: 13, color: "#128C7E", fontWeight: "600" },
 
   // Section header
   sectionHeader: {
-    backgroundColor: '#F2F2F7',
+    backgroundColor: "#F2F2F7",
     paddingHorizontal: 18,
     paddingVertical: 5,
     marginTop: 4,
   },
   sectionHeaderText: {
     fontSize: 11,
-    fontWeight: '600',
-    color: '#6D6D72',
-    textTransform: 'uppercase',
+    fontWeight: "600",
+    color: "#6D6D72",
+    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
 
   // Row
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 18,
     paddingVertical: 11,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   sep: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: '#E5E5EA',
+    backgroundColor: "#E5E5EA",
     marginLeft: 84, // indent to avatar right edge
   },
 
   // Avatar + pip
-  avatarWrap: { width: 52, height: 52, marginRight: 14, position: 'relative' },
-
+  avatarWrap: { width: 52, height: 52, marginRight: 14, position: "relative" },
   avatarFallback: {
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: '#1C1C1E',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#1C1C1E",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  avatarInitial: { fontSize: 22, color: '#fff', fontWeight: '700' },
+  avatarInitial: { fontSize: 22, color: "#fff", fontWeight: "700" },
   typePip: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     right: 0,
     width: 18,
     height: 18,
     borderRadius: 9,
     backgroundColor: GREEN,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderWidth: 2,
-    borderColor: '#fff',
+    borderColor: "#fff",
   },
   typePipMissed: { backgroundColor: RED },
 
   // Info column
   info: { flex: 1 },
-  name: { fontSize: 16, fontWeight: '600', color: '#111', marginBottom: 3 },
-  nameMissed: { color: '#111' }, // name stays black even for missed — only icon+label go red
-  subRow: { flexDirection: 'row', alignItems: 'center' },
-  subText: { fontSize: 13, color: '#636366' },
+  name: { fontSize: 16, fontWeight: "600", color: "#111", marginBottom: 3 },
+  nameMissed: { color: "#111" }, // name stays black even for missed — only icon+label go red
+  subRow: { flexDirection: "row", alignItems: "center" },
+  subText: { fontSize: 13, color: "#636366" },
   subTextMissed: { color: RED },
 
   // Right column
-  rightCol: { alignItems: 'flex-end', gap: 6, minWidth: 56 },
+  rightCol: { alignItems: "flex-end", gap: 6, minWidth: 56 },
   time: { fontSize: 12, color: GREY },
   timeMissed: { color: RED },
 
   // Empty state
   empty: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingTop: 80,
   },
   emptyIconWrap: {
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: '#F2F2F7',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#F2F2F7",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 16,
   },
   emptyTitle: {
     fontSize: 17,
-    fontWeight: '600',
-    color: '#3C3C43',
+    fontWeight: "600",
+    color: "#3C3C43",
     marginBottom: 6,
   },
-  emptySub: { fontSize: 14, color: '#AEAEB2' },
+  emptySub: { fontSize: 14, color: "#AEAEB2" },
 });
