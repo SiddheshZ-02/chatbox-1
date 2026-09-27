@@ -1,0 +1,14 @@
+{
+       "sonarlint.connectedMode.connections.sonarcloud":[
+        {
+            "organizationKey":"siddheshz-02",
+            "token":"2d8853f3d57ff6a979bc793c9b451fdfa5db5f4b",
+            "connection":"sonar-cloud",
+            
+        }
+    ],
+    "sonarlint.connectedMode.project": {
+        "connectionId": "siddheshz-02",
+        "projectKey": "SiddheshZ-02_chatbox-1"
+    }
+}
