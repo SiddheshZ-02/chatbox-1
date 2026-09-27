@@ -1,47 +1,48 @@
-import React, { useState, useRef } from 'react';
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React, { useState } from "react";
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
   Alert,
   Image,
-  TextInput,
   PermissionsAndroid,
   Platform,
   StatusBar,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import Feather from 'react-native-vector-icons/Feather';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import ImageResizer from 'react-native-image-resizer';
-import { useAuth } from '../../core/context/AuthContext';
-import { storiesService } from '../../core/services/stories.service';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import ImageResizer from "react-native-image-resizer";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Feather from "react-native-vector-icons/Feather";
+
+import { useAuth } from "../../core/context/AuthContext";
+import { storiesService } from "../../core/services/stories.service";
 
 type StoryCreatorNavigationProp = NativeStackNavigationProp<any>;
 
 const StoryCreator = () => {
   const navigation = useNavigation<StoryCreatorNavigationProp>();
-  const { user, userProfile } = useAuth();
+  const { userProfile } = useAuth();
   const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
-  const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
-  const [caption, setCaption] = useState('');
+  const [mediaType, setMediaType] = useState<"image" | "video">("image");
+  const [caption, setCaption] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
   // Function to request camera permission
   const requestCameraPermission = async () => {
-    if (Platform.OS === 'android') {
+    if (Platform.OS === "android") {
       try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.CAMERA,
           {
-            title: 'Camera Permission',
-            message: 'App needs camera permission to take photos',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
+            title: "Camera Permission",
+            message: "App needs camera permission to take photos",
+            buttonNeutral: "Ask Me Later",
+            buttonNegative: "Cancel",
+            buttonPositive: "OK",
           },
         );
         return granted === PermissionsAndroid.RESULTS.GRANTED;
@@ -55,26 +56,29 @@ const StoryCreator = () => {
 
   const handleSelectFromGallery = () => {
     const options = {
-      mediaType: 'photo' as const,
+      mediaType: "photo" as const,
       quality: 0.8 as const,
       selectionLimit: 1,
     };
 
     launchImageLibrary(options, (response) => {
-      console.log('ImagePicker Response:', response);
-      
+      console.log("ImagePicker Response:", response);
+
       if (response.didCancel) {
-        console.log('User cancelled image picker');
-        Alert.alert('Cancelled', 'Image selection was cancelled');
+        console.log("User cancelled image picker");
+        Alert.alert("Cancelled", "Image selection was cancelled");
       } else if (response.errorCode) {
-        console.log('ImagePicker Error: ', response.errorMessage);
-        Alert.alert('Error', `Failed to select image: ${response.errorMessage}`);
+        console.log("ImagePicker Error: ", response.errorMessage);
+        Alert.alert(
+          "Error",
+          `Failed to select image: ${response.errorMessage}`,
+        );
       } else if (response.assets && response.assets[0]) {
-        console.log('Selected image URI:', response.assets[0].uri);
+        console.log("Selected image URI:", response.assets[0].uri);
         setSelectedMedia(response.assets[0].uri || null);
-        setMediaType('image');
+        setMediaType("image");
       } else {
-        Alert.alert('Error', 'No image was selected');
+        Alert.alert("Error", "No image was selected");
       }
     });
   };
@@ -83,114 +87,124 @@ const StoryCreator = () => {
     // Request camera permission first
     const hasPermission = await requestCameraPermission();
     if (!hasPermission) {
-      Alert.alert('Permission Denied', 'Camera permission is required to take photos');
+      Alert.alert(
+        "Permission Denied",
+        "Camera permission is required to take photos",
+      );
       return;
     }
 
     const options = {
-      mediaType: 'photo' as const,
+      mediaType: "photo" as const,
       quality: 0.8 as const,
       saveToPhotos: true,
-      cameraType: 'back' as const, // Use back camera
+      cameraType: "back" as const, // Use back camera
     };
 
-    console.log('Launching camera with options:', options);
+    console.log("Launching camera with options:", options);
 
     launchCamera(options, (response) => {
-      console.log('Camera Response:', response);
-      
+      console.log("Camera Response:", response);
+
       if (response.didCancel) {
-        console.log('User cancelled camera');
-        Alert.alert('Cancelled', 'Photo capture was cancelled');
+        console.log("User cancelled camera");
+        Alert.alert("Cancelled", "Photo capture was cancelled");
       } else if (response.errorCode) {
-        console.log('Camera Error: ', response.errorMessage);
-        Alert.alert('Camera Error', `Failed to take photo: ${response.errorMessage}`);
+        console.log("Camera Error: ", response.errorMessage);
+        Alert.alert(
+          "Camera Error",
+          `Failed to take photo: ${response.errorMessage}`,
+        );
       } else if (response.assets && response.assets[0]) {
-        console.log('Captured photo URI:', response.assets[0].uri);
+        console.log("Captured photo URI:", response.assets[0].uri);
         setSelectedMedia(response.assets[0].uri || null);
-        setMediaType('image');
+        setMediaType("image");
       } else {
-        Alert.alert('Error', 'No photo was captured');
+        Alert.alert("Error", "No photo was captured");
       }
     });
   };
 
   const handleUploadStory = async () => {
     if (!selectedMedia || !userProfile) {
-      Alert.alert('Error', 'Please select a photo first');
+      Alert.alert("Error", "Please select a photo first");
       return;
     }
 
     if (!storiesService) {
-      Alert.alert('Error', 'Stories service is not available. RNFS may not be properly linked.');
+      Alert.alert(
+        "Error",
+        "Stories service is not available. RNFS may not be properly linked.",
+      );
       return;
     }
 
     setIsUploading(true);
     try {
-      console.log('=== UPLOAD STORY START ===');
-      console.log('Selected media:', selectedMedia);
-      console.log('User profile:', userProfile.uid);
+      console.log("=== UPLOAD STORY START ===");
+      console.log("Selected media:", selectedMedia);
+      console.log("User profile:", userProfile.uid);
 
       // Compress image if it's too large
       let compressedMediaUri = selectedMedia;
-      
-      if (mediaType === 'image') {
+
+      if (mediaType === "image") {
         compressedMediaUri = await compressImage(selectedMedia);
-        console.log('Image compressed to:', compressedMediaUri);
+        console.log("Image compressed to:", compressedMediaUri);
       }
-      
+
       // Create story in Firestore with the original URI (the method will convert to Base64)
-      console.log('Creating story with media URI...');
+      console.log("Creating story with media URI...");
       await storiesService.createStory(
         userProfile.uid,
-        userProfile.name || 'User',
-        userProfile.profile_image || '',
+        userProfile.name || "User",
+        userProfile.profile_image || "",
         compressedMediaUri, // Pass the original URI, not Base64 data
         mediaType,
-        caption
+        caption,
       );
 
-      console.log('=== UPLOAD STORY SUCCESS ===');
-      Alert.alert('Success', 'Story uploaded successfully');
+      console.log("=== UPLOAD STORY SUCCESS ===");
+      Alert.alert("Success", "Story uploaded successfully");
       navigation.goBack();
     } catch (error: any) {
-      console.error('=== UPLOAD STORY ERROR ===');
-      console.error('Error uploading story:', error);
-      console.error('Error details:', error.message || error);
-      
-      let errorMessage = 'Failed to upload story with Base64 encoding. Please try again.';
+      console.error("=== UPLOAD STORY ERROR ===");
+      console.error("Error uploading story:", error);
+      console.error("Error details:", error.message || error);
+
+      let errorMessage =
+        "Failed to upload story with Base64 encoding. Please try again.";
       if (error.code) {
         errorMessage += `\nError code: ${error.code}`;
       }
       if (error.message) {
         errorMessage += `\n${error.message}`;
       }
-      
-      Alert.alert('Error', errorMessage);
+
+      Alert.alert("Error", errorMessage);
     } finally {
       setIsUploading(false);
     }
   };
-  
+
   const compressImage = async (imageUri: string): Promise<string> => {
     try {
       // Use react-native-image-resizer for proper image compression
       const response = await ImageResizer.createResizedImage(
         imageUri,
         1000, // maxWidth
-        1000, // maxHeight  
-        'JPEG', // format
+        1000, // maxHeight
+        "JPEG", // format
         85, // quality (0-100)
         0, // rotation
         undefined, // outputPath
-        true // keep metadata
+        true, // keep metadata
       );
-      
-      console.log('Image compressed successfully:', response);
+
+      console.log("Image compressed successfully:", response);
       return response.uri;
     } catch (error) {
-      console.error('Error compressing image:', error);
+      console.error("Error compressing image:", error);
       // Return original URI if compression fails
       return imageUri;
     }
@@ -204,19 +218,28 @@ const StoryCreator = () => {
             <Feather name="arrow-left" size={24} color="#FFF" />
           </TouchableOpacity>
           <Text style={styles.previewTitle}>Preview Story</Text>
-          <TouchableOpacity 
-            onPress={handleUploadStory} 
+          <TouchableOpacity
+            onPress={handleUploadStory}
             disabled={isUploading}
             style={styles.postButton}
           >
-            <Text style={[styles.postButtonText, isUploading && styles.disabledText]}>
-              {isUploading ? 'Posting...' : 'Post'}
+            <Text
+              style={[
+                styles.postButtonText,
+                isUploading && styles.disabledText,
+              ]}
+            >
+              {isUploading ? "Posting..." : "Post"}
             </Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.imagePreviewContainer}>
-          <Image source={{ uri: selectedMedia }} style={styles.imagePreview} resizeMode="contain" />
+          <Image
+            source={{ uri: selectedMedia }}
+            style={styles.imagePreview}
+            resizeMode="contain"
+          />
         </View>
 
         <View style={styles.captionContainer}>
@@ -242,7 +265,7 @@ const StoryCreator = () => {
           <Feather name="x" size={24} color="#000" />
         </TouchableOpacity>
         <Text style={styles.title}>Create Story</Text>
-        <View style={{ width: 24 }} /> {/* Spacer */}
+        <View style={{ width: 24 }} />
       </View>
 
       <View style={styles.optionsContainer}>
@@ -253,7 +276,10 @@ const StoryCreator = () => {
           <Text style={styles.optionText}>Take Photo</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.optionButton} onPress={handleSelectFromGallery}>
+        <TouchableOpacity
+          style={styles.optionButton}
+          onPress={handleSelectFromGallery}
+        >
           <View style={styles.optionIcon}>
             <Feather name="image" size={32} color="#FFF" />
           </View>
@@ -267,71 +293,71 @@ const StoryCreator = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#EEE',
+    borderBottomColor: "#EEE",
   },
   title: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
   },
   optionsContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 30,
   },
   optionButton: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 40,
   },
   optionIcon: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#000",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 15,
   },
   optionText: {
     fontSize: 16,
-    color: '#000',
-    fontWeight: '500',
+    color: "#000",
+    fontWeight: "500",
   },
   previewContainer: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: "#000",
   },
   previewHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,
   },
   previewTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#FFF',
+    fontWeight: "600",
+    color: "#FFF",
   },
   postButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     paddingHorizontal: 20,
     paddingVertical: 8,
     borderRadius: 20,
   },
   postButtonText: {
-    color: '#FFF',
-    fontWeight: '600',
+    color: "#FFF",
+    fontWeight: "600",
     fontSize: 16,
   },
   disabledText: {
@@ -339,26 +365,26 @@ const styles = StyleSheet.create({
   },
   imagePreviewContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   imagePreview: {
-    width: '100%',
-    height: '80%',
+    width: "100%",
+    height: "80%",
   },
   captionContainer: {
     padding: 20,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
   },
   captionInput: {
     fontSize: 16,
-    color: '#000',
+    color: "#000",
     minHeight: 60,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   captionLength: {
-    textAlign: 'right',
-    color: '#999',
+    textAlign: "right",
+    color: "#999",
     fontSize: 12,
     marginTop: 5,
   },
